@@ -68,13 +68,30 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(`/activities/${encodeURIComponent(activity)}/signup?email=${encodeURIComponent(email)}`, {
               method: 'DELETE',
             });
+            const result = await response.json();
             if (response.ok) {
+              messageDiv.textContent = result.message || 'Participante removido com sucesso.';
+              messageDiv.className = 'success';
+              messageDiv.classList.remove('hidden');
               fetchActivities();
+              setTimeout(() => {
+                messageDiv.classList.add('hidden');
+              }, 5000);
             } else {
-              alert('Erro ao remover participante.');
+              messageDiv.textContent = result.detail || 'Erro ao remover participante.';
+              messageDiv.className = 'error';
+              messageDiv.classList.remove('hidden');
+              setTimeout(() => {
+                messageDiv.classList.add('hidden');
+              }, 5000);
             }
           } catch (err) {
-            alert('Erro ao remover participante.');
+            messageDiv.textContent = 'Erro ao remover participante.';
+            messageDiv.className = 'error';
+            messageDiv.classList.remove('hidden');
+            setTimeout(() => {
+              messageDiv.classList.add('hidden');
+            }, 5000);
           }
         });
       });
