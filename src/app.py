@@ -38,6 +38,45 @@ activities = {
       "schedule": "Segundas, quartas e sextas, 14h - 15h",
       "max_participants": 30,
       "participants": ["john@mergington.edu", "olivia@mergington.edu"]
+   },
+   # Esportivas
+   "Futebol": {
+      "description": "Participe do time de futebol da escola e jogue campeonatos",
+      "schedule": "Quartas e sextas, 16h - 17h30",
+      "max_participants": 22,
+      "participants": ["lucas@mergington.edu", "marcos@mergington.edu"]
+   },
+   "Vôlei": {
+      "description": "Aulas e treinos de vôlei para todos os níveis",
+      "schedule": "Terças e quintas, 14h - 15h30",
+      "max_participants": 18,
+      "participants": ["ana@mergington.edu", "carla@mergington.edu"]
+   },
+   # Artísticas
+   "Teatro": {
+      "description": "Oficina de teatro e expressão corporal",
+      "schedule": "Segundas e quartas, 16h - 17h",
+      "max_participants": 15,
+      "participants": ["paulo@mergington.edu", "juliana@mergington.edu"]
+   },
+   "Clube de Artes": {
+      "description": "Desenho, pintura e outras atividades artísticas",
+      "schedule": "Sextas, 14h - 15h30",
+      "max_participants": 20,
+      "participants": ["lara@mergington.edu", "bruno@mergington.edu"]
+   },
+   # Intelectuais
+   "Clube de Leitura": {
+      "description": "Leitura e discussão de livros clássicos e contemporâneos",
+      "schedule": "Quartas, 15h - 16h",
+      "max_participants": 16,
+      "participants": ["camila@mergington.edu", "rafael@mergington.edu"]
+   },
+   "Olimpíada de Matemática": {
+      "description": "Preparação para olimpíadas de matemática e desafios lógicos",
+      "schedule": "Segundas e quintas, 17h - 18h",
+      "max_participants": 25,
+      "participants": ["mateus@mergington.edu", "aline@mergington.edu"]
    }
 }
 
@@ -62,6 +101,24 @@ def signup_for_activity(activity_name: str, email: str):
     # Get the specificy activity
     activity = activities[activity_name]
 
+    # Validar se o estudante já está inscrito
+    if email in activity["participants"]:
+      raise HTTPException(status_code=400, detail=f"{email} já está inscrito(a) em {activity_name}")
+    
     # Add student
     activity["participants"].append(email)
     return {"message": f"{email} inscrito(a) em {activity_name} com sucesso"}
+
+
+@app.delete("/activities/{activity_name}/signup")
+def remove_participant(activity_name: str, email: str):
+    """Remove um participante de uma atividade"""
+    # Verifica se a atividade existe
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Atividade não encontrada")
+    activity = activities[activity_name]
+    # Verifica se o participante está inscrito
+    if email not in activity["participants"]:
+        raise HTTPException(status_code=404, detail="Participante não encontrado nesta atividade")
+    activity["participants"].remove(email)
+    return {"message": f"{email} removido(a) de {activity_name} com sucesso"}
